@@ -7,9 +7,11 @@ tic;
 %% Read the input image and add a gaussian noise to it
 clear all; close all; clc;
 
-x = im2double(imread('../data/lena.png'));
+l=load('data/lena512.mat');
+x = im2double(l.lena512);
 
-intensity_range = max(max(x)) - min(min(x));
+% rescaling 0-255 to 0-1
+x = x/255;
 sd_ratio = 0.1;
 sd = sd_ratio*intensity_range;
 
@@ -19,6 +21,10 @@ n = sd*randn(size(x)); % TODO check is sd or sd^2
 % calculating corrupted image y
 y = x+n;
 
+numBins = ceil((512*512)^0.33);
+figure(1);
+[counts, dist]=imhist(x);
 
-
+pdf = counts/(512*512);
+plot(pdf);
 
