@@ -21,10 +21,8 @@ n = sd*randn(size(x)); % TODO check is sd or sd^2
 % calculating corrupted image y
 y = x+n;
 
-numBins = ceil((512*512)^0.33);
-figure(1);
-[counts, dist]=imhist(x);
 
-pdf = counts/(512*512);
-plot(pdf);
-
+% testing getProbabilityEstimates
+xvec = reshape(x,[],1);
+yvec = reshape(y,[],1);
+[pX,pY,pXY]=getProbabilityEstimates(xvec,yvec);
