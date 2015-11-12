@@ -15,8 +15,8 @@ numOfBins = ceil(n^(1/3));
 
 % performing 1D binning for x and y
 
-[xCounts, xEdges, xBins] = histcounts(x,numOfBins);
-[yCounts, yEdges, yBins] = histcounts(y,numOfBins);
+[xCounts, ~, xBins] = histcounts(x,numOfBins);
+[yCounts, ~, yBins] = histcounts(y,numOfBins);
 
 xPdf = xCounts/n;
 pX = xPdf(xBins);
@@ -26,10 +26,12 @@ pY = yPdf(yBins);
 
 % performing 2D binning
 xyCounts =zeros(numOfBins,numOfBins);
-xIndices = find(xEdges>x,1)-1;
-yIndices = find(yEdges>y,1)-1;
 
-xyCounts(xIndices,yIndices)=xyCounts(xIndices,yIndices)+1;
-
+for xIndex=1:numOfBins
+    for yIndex=1:numOfBins
+        xyCounts(xBins(xIndex),yBins(yIndex))=xyCounts(xBins(xIndex),yBins(yIndex))+1;
+    end
+end
 xyPdf = xyCounts/n;
-pXY = xyPdf(xIndices,yIndices);
+disp(size(xyPdf));
+pXY = xyPdf(xBins,yBins);
