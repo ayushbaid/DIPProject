@@ -13,6 +13,7 @@ x = im2double(l.lena512);
 % rescaling 0-255 to 0-1
 x = x/255;
 sd_ratio = 0.1;
+intensity_range = 1;
 sd = sd_ratio*intensity_range;
 
 % Generating an iid gaussian noise
