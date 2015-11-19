@@ -1,16 +1,14 @@
-function [ t ] = pearsonCorrelationCoefficientTest( x,y,n )
+function [ t ] = pearsonCorrelationCoefficientTest( x,y,N,n )
 %pearsonCorrelationCoefficientCalc: Calculates the Pearson's Correlation and
 %tests it using a student-t distribution
-%Coeffiecient between 2 input images x and y
-%   param: x - input image 1
-%   param: y - input image 2
+%Coeffiecient between 2 input vectors x and y
+%   param: x - input vector 1
+%   param: y - input vector 2
+%   param: N - a single coeff of 
 %   param: n - degrees of freedom for student-t distribution
 %   returns: t - the corr. coefficient test result
 
-% unrolling x and y into row vectors
-% TODO: check if covariance defn correct
-x = reshape(x,1,[]);
-y = reshape(y,1,[]);
+%TODO: implement sliding window
 
 sxy = cov(x,y);
 sx = cov(x);
