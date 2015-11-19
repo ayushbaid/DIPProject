@@ -16,7 +16,7 @@ r1 = r - mur;
 syr = sum(sum(y1.*r1))/(m1*m2);
 sample_mean = sumsqr(r)/(m1*m2);
 temp = [sample_mean,syr,sig^2];
-L = max(max(d))/min(min(d));    % use the dynamic range of the denoised image or the noisy image?
+%L = max(max(d))/min(min(d));    % use the dynamic range of the denoised image or the noisy image?
 
 mse = sample_mean + sig^2 - 2*min(temp);
-psnr = 10*log10(L^2/mse);
+psnr = 10*log10(1/mse);

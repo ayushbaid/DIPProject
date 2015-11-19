@@ -15,8 +15,8 @@ tic;
 %% Generating input image for the denoiser
 clear all; close all; clc;
 
-l=load('data/lena512.mat');
-x = im2double(l.lena512);
+l=load('data/boat.mat');
+x = im2double(l.imageOrig);
 
 % rescaling 0:255 to 0:1
 x = x/255;
@@ -33,39 +33,64 @@ y = x+n;
 N = 2*a*b;
 
 %% Denoising the image repeatatively
+c1 = 10e-4;
+c2 = 9e-4;
+c3 = c2/2;
 
 d0 = y;
 d = wiener2(d0);
-[mse,psnr] = getPSNR(y,x,sd);
-ssim = getSSIM(y,d,sd,10e-6,10e-6,10e-6);
+[mse,psnr] = getPSNR(y,d,sd);
+ssim = getSSIM(y,d,sd,c1,c2,c3);
 
-%fprintf('application of simple adaptive wiener\n');
-%fprintf('MSE = %d\n',mse);
-%fprintf('PSNR = %d\n', psnr);
-%fprintf('SSIM = %d\n', ssim);
-%fprintf('\n');
+fprintf('application of simple adaptive wiener\n');
+fprintf('MSE = %d\n',mse);
+fprintf('PSNR = %d\n', psnr);
+fprintf('SSIM = %d\n', ssim);
+fprintf('\n');
 
-
-for j = 1:5
+MAX_ITER = 20;
+ssim = zeros(MAX_ITER);
+psnr = zeros(MAX_ITER);
+mse = zeros(MAX_ITER);
+for j = 1:MAX_ITER
     d1 = wiener2(d0);
     r = y - d1;
-    t = pearsonCorrelationCoefficientTest( r,y,N );
-    fprintf('t = %d\n',t);
+%     t = pearsonCorrelationCoefficientTest( r,y,N );
+%     fprintf('t = %d\n',t);
     r1 = wiener2(r);
     d0 = d1 + r1;
+    [mse(j),psnr(j)] = getPSNR(y,d0,sd);
+    ssim(j) = getSSIM(y,d0,sd,c1,c2,c3);
+    fprintf('Iteration = %d\n',j);
+    fprintf('MSE = %d\n',mse(j));
+    fprintf('PSNR = %d\n', psnr(j));
+    fprintf('SSIM = %d\n', ssim(j));
+    fprintf('\n');
 end
 
-[mse1,psnr1] = getPSNR(x,d1,sd);
-ssim1 = getSSIM(x,d1,sd,10e-6,10e-6,10e-6);
-%fprintf('application of iterative denoiser along with use of residual image - d1\n');
-%fprintf('MSE = %d\n',mse1);
-%fprintf('PSNR = %d\n', psnr1);
-%fprintf('SSIM = %d\n', ssim1);
-%fprintf('\n');
+figure()
+plot(ssim);
+title('ssim');
 
+figure()
+plot(psnr)
+title('psnr');
 
-[mse0,psnr0] = getPSNR(x,d0,sd);
-ssim0 = getSSIM(x,d0,sd,10e-6,10e-6,10e-6);
+figure()
+plot(mse)
+title('mse');
+
+% [mse1,psnr1] = getPSNR(x,d1,sd);
+% ssim1 = getSSIM(x,d1,sd,10e-6,10e-6,10e-6);
+% fprintf('application of iterative denoiser along with use of residual image - d1\n');
+% fprintf('MSE = %d\n',mse1);
+% fprintf('PSNR = %d\n', psnr1);
+% fprintf('SSIM = %d\n', ssim1);
+% fprintf('\n');
+% 
+% 
+% [mse0,psnr0] = getPSNR(x,d0,sd);
+% ssim0 = getSSIM(x,d0,sd,10e-6,10e-6,10e-6);
 %fprintf('application of iterative denoiser along with use of residual image - d0\n');
 %fprintf('MSE = %d\n',mse0);
 %fprintf('PSNR = %d\n', psnr0);
