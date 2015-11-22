@@ -15,7 +15,15 @@ n = sd*randn(size(x)); % TODO check is sd or sd^2
 % calculating corrupted image y
 y = x+n;
 
-[r] = gTest(y,d, 15);
+[r,testResult] = CorrCoeffTest(x, y, 7);
+
+% rescaling r to display as an image
+rmin = min(min(r));
+rmax = max(max(r));
+scaled_r = (r-rmin)./(rmax-rmin);
 
 figure()
-imagesc(r)
+imshow(r)
+
+figure()
+imshow(testResult)

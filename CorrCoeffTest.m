@@ -1,4 +1,4 @@
-function [ corr_coeff_matrix, t ] = CorrCoeffTest( im1, im2, N, n )
+function [ corr_coeff_matrix, testResult ] = CorrCoeffTest( im1, im2, N)
 %pearsonCorrelationCoefficientCalc: Calculates the Pearson's Correlation for a
 %pixel pair using a window centered at that pixel.
 %tests it using a student-t distribution
@@ -6,9 +6,9 @@ function [ corr_coeff_matrix, t ] = CorrCoeffTest( im1, im2, N, n )
 %   param: im1 - input image 1
 %   param: im2 - input image 2
 %   param: N - the size of the window (along one dimension)
-%   param: n - degrees of freedom for student-t distribution
 %   returns: corr_coeff_matrix - the corr. coefficents matrixs
-%   returns: t - the corr. coefficient test result
+%   returns: testResult - the result about the rejection of independence
+%                         hypothesis
 
 R = size(im1,1);
 C = size(im1,1);
@@ -46,15 +46,19 @@ for i=1:R
         % calculating covariance matrix and the s.ds
         cov_matrix = cov(vector_x, vector_y);
         
-        sx = cov_matrix(1,1);
-        sy = cov_matrix(2,2);
+        sx = sqrt(cov_matrix(1,1));
+        sy = sqrt(cov_matrix(2,2));
         sxy = cov_matrix(1,2);
         
         corr_coeff_matrix(i,j) = sxy/(sx*sy);
     end
 end
 
-t = corr_coeff_matrix*sqrt((n-2)./(1-corr_coeff_matrix.^2));
+t = corr_coeff_matrix.*sqrt((N*N-2)./(1-corr_coeff_matrix.^2));
 
+% Thresholding for 99.9% confidence
+testResult = t<=3.373;
+
+% test result = 1 indicates rejection of indepence hypothesis
 end
 
