@@ -20,10 +20,10 @@ c1 = 10e-4;
 c2 = 9e-4;
 c3 = c2/2;
 
-MAX_ITER = 20; % for the iterative algo
+MAX_ITER = 5; % for the iterative algo
 
 % looping over all the available images
-for i=1:1
+for i=1:nfiles
     currentImageName = images(i).name;
     x = imread([imgPath currentImageName]);
     x = im2double(x);
@@ -32,7 +32,7 @@ for i=1:1
     x = x/255;
     
     % looping over noise's s.d.
-    for j=2:2
+    for j=1:6
 
         sd_ratio = sd_set(j)/255;
         intensity_range = 1;
@@ -54,7 +54,7 @@ for i=1:1
         [mse0,psnr0] = getPSNR(y,d,sd);
         ssim0 = getSSIM(y,d,sd,c1,c2,c3);
 
-        fprintf('Image number = %d',i);
+        fprintf('Image number = %d\n',i);
         fprintf('S.D = %d', sd_set(j));
         % fprintf('application of simple adaptive wiener\n');
         % fprintf('MSE = %d\n',mse);
@@ -63,38 +63,41 @@ for i=1:1
         % fprintf('\n');
 
 
-        ssim = zeros(MAX_ITER);
-        psnr = zeros(MAX_ITER);
-        mse = zeros(MAX_ITER);
+        ssim = zeros(MAX_ITER,1);
+        psnr = zeros(MAX_ITER,1);
+        mse = zeros(MAX_ITER,1);
         for k = 1:MAX_ITER
             d1 = D1_filter(d0);
             r = y - d1;
             %     t = pearsonCorrelationCoefficientTest( r,y,N );
             %     fprintf('t = %d\n',t);
-            % Denoising the residue
-            r1 = wiener2(r);
-            d0 = d1 + r1;
+            
+            r1 = wiener2(r); % Denoising the residue
+            d0 = d1 + r1; % Adding back the denoised residue
             [mse(k),psnr(k)] = getPSNR(y,d0,sd);
-            ssim(k) = getSSIM(y,d0,sd,c1,c2,c3);
-            %         fprintf('Iteration = %d\n',j);
-            %         fprintf('MSE = %d\n',mse(j));
-            %         fprintf('PSNR = %d\n', psnr(j));
-            %         fprintf('SSIM = %d\n', ssim(j));
+            ssim(k) = getSSIM(y,d0,sd_ratio,c1,c2,c3);
+            
+            %         fprintf('Iteration = %d\n',k);
+            %         fprintf('MSE = %d\n',mse(k));
+            %         fprintf('PSNR = %d\n', psnr(k));
+            %         fprintf('SSIM = %d\n', ssim(k));
             %         fprintf('\n');
         end
     
     
         figure()
         hold on
-        plot(ssim,'Iterative Method');
-        plot(ssim0*ones(MAX_ITER),'TVI');
-        title('ssim');
+        plot(ssim);
+        plot(ssim0*ones(MAX_ITER));
+        legend('Iterative Method', 'TVI');
+        title('ssim for image = %d s.d = %d',i,sd_set(j));
 
         figure(2)
         hold on
-        plot(psnr,'Iterative Method');
-        plot(psnr0*ones(MAX_ITER),'TVI');
-        title('psnr');
+        plot(psnr);
+        plot(psnr0*ones(MAX_ITER));
+        legend('Iterative Method', 'TVI');
+        title('psnr for image = %d s.d = %d',i,sd_set(j));
 
     end
 end
