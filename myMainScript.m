@@ -89,13 +89,15 @@ for i=1:nfiles
         hold on
         plot(ssim);
         plot(ssim0*ones(MAX_ITER));
+        hold off
         legend('Iterative Method', 'TVI');
         title('ssim for image = %d s.d = %d',i,sd_set(j));
 
-        figure(2)
+        figure()
         hold on
         plot(psnr);
         plot(psnr0*ones(MAX_ITER));
+        hold off
         legend('Iterative Method', 'TVI');
         title('psnr for image = %d s.d = %d',i,sd_set(j));
 

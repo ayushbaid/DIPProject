@@ -1,6 +1,6 @@
 # DIPProject
 * The use of residuals in image denoising
-* based on Brunet et. al.
+* Implementation of a paper by Brunet et. al.
 
 # Code Environment Requirements
 * This code will run on Windows OS only due to the use of file specific paths in a 3rd party toolbox used.
