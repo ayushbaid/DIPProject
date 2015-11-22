@@ -1,4 +1,4 @@
-clear all; close all; clc;
+close all; clc;
 
 l=load('data/lena512.mat');
 x = im2double(l.lena512);

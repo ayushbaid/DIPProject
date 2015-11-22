@@ -1,56 +1,84 @@
-function [ result ] = gTest( in1, in2)
+function [ MI ] = gTest( im1, im2, blockSize)
 %gTest: Calculates the result of the g-test on two images
 %   param in1: input image 1
 %   param in2: input image 2
-%   returns result: the G-Test result
+%   param blockSize: the size of the block used for probabilith estimation
+%   returns MI: the 2D mutual info matrix
 
-[R,C] = size(in1); % = size(in2)
+[R,C] = size(im1); % = size(im2)
 
 % defining the mutual information array
 MI = zeros(R,C);
 
-% using non-overlapping blocks to perform local binning
-blockSize = 15;
-
 % TODO: check if to be defined on block size or image size
 numOfBins = ceil(blockSize^(2/3)); % rule of thumb mentioned in the paper
 
-% calculating number of blocks for each dimension
-X_max = ceil(R/blockSize);
-Y_max = ceil(C/blockSize);
+l = floor(blockSize/2);
 
-% iterating over blocks
-for x=1:X_max
-    x1=(x-1)*blockSize+1;
-    x2=min(x*blockSize,R);
-    for y=1:Y_max
-        y1=(y-1)*blockSize+1;
-        y2=min(y*blockSize,C);
+% iterating over each pixel
+for i=1:R
+    for j=1:C
+        % defining window bounds
+        x1 = i-l;
+        x2 = i+l;
+        y1 = j-l;
+        y2 = j+l;
         
-        block1=in1(x1:x2,y1:y2);
-        block2=in2(x1:x2,y1:y2);
+        % cropping window when bounds exceed allowed values
+        if(x1<1)
+            x1=1;
+        end
+        if(x2>R)
+            x2=R;
+        end
+        if(y1<1)
+            y1=1;
+        end
+        if(y2>C)
+            y2=C;
+        end
         
-        jointSpace = 
+        block_x = reshape(im1(x1:x2,y1:y2),[],1);
+        block_y = reshape(im2(x1:x2,y1:y2),[],1);
         
-        % performing binning
-        [counts1,binLoc1] = imhist(block1,numOfBins);
-        [counts2,binLoc2] = imhist(block2,numOfBins);
-        [counts_joint, binLocJoint] = imcount(
-        pdf1 = counts1/(15*15);
-        pdf2 = counts2/(15*15);
         
-        % calculating the metric for each pixel in the selected block
+        % performing binning for x and y separately
+        [counts_x, ~, bins_x] = histcounts(block_x,numOfBins);
+        [counts_y, ~, bins_y] = histcounts(block_y,numOfBins);
         
-        for a=1:(x2-x1+1)
-            for b=1:(y2-y1+1)
-                val1=block1(a,b);
-                val2=block2(a,b);
-                
-                
+        
+        L = size(block_x,1);
+        counts_xy = zeros(numOfBins,numOfBins);
+        % performing 2D binning
+        for index=1:L
+            bin_index_x = bins_x(index);
+            bin_index_y = bins_y(index);
+            
+            counts_xy(bin_index_x,bin_index_y)=counts_xy(bin_index_x,bin_index_y) + 1;
+        end
+        
+        
+        % normalizing counts to get pdfs
+        pdf_x = counts_x/L;
+        pdf_y = counts_y/L;
+        pdf_xy = counts_xy/L;
+        
+        %         disp(pdf_x);
+        %         disp(pdf_y);
+        %         disp(pdf_xy);
+        
+        
+        % calculating mutual information
+        for bin1=1:numOfBins
+            for bin2=1:numOfBins
+                if(pdf_xy(bin1,bin2)~=0)
+                    temp = pdf_xy(bin1,bin2)*log(pdf_xy(bin1,bin2)/(pdf_x(bin1)*pdf_y(bin2)));
+                    MI(i,j) = MI(i,j)+temp;
+                end
+            end
+        end
+        
+        
     end
-end
-        
-
-
 end
 
