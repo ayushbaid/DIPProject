@@ -1,4 +1,4 @@
-% This script is an implementation of an Image Denoising algorithm which uses
+x% This script is an implementation of an Image Denoising algorithm which uses
 % the residual noise structure for improved performance.
 
 % Paper - The Use of Residuals in Image Denoising, Brunet et. al.
@@ -11,7 +11,7 @@ imgPath = '.\USC_SIPI_database\';
 imgType = '*.tiff';
 images = dir([imgPath imgType]);
 nfiles = length(images);
-for i=1:1
+for i=1:nfiles
     currentImage = images(i).name;
     x = imread([imgPath currentImage]);
     x = im2double(x);
