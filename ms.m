@@ -1,5 +1,6 @@
 % This script is an implementation of an Image Denoising algorithm which uses
 % the residual noise structure for improved performance.
+% Runs for all images and 6 different noise s.ds
 
 % Paper - The Use of Residuals in Image Denoising, Brunet et. al.
 
@@ -18,7 +19,7 @@ images = dir([imgPath imgType]);
 nfiles = length(images);
 
 % init the set of standard deviations to test on
-sd_set = [0 5 10 15 25 70];
+sd_set = [0 5 15 25 40 70];
 
 % initializing SSIM params
 c1 = 10e-4;
@@ -35,7 +36,7 @@ options.lambda = .3; % initial regularization
 
 
 % looping over all the available images
-for i=1:1
+for i=1:nfiles
     currentImageName = images(i).name;
     x = imread([imgPath currentImageName]);
     x = im2double(x);
@@ -44,7 +45,7 @@ for i=1:1
     x = x/255;
     
     % looping over noise's s.d.
-    for j=2:2
+    for j=1:6
 
         sd_ratio = sd_set(j)/255;
         intensity_range = 1;
@@ -70,11 +71,6 @@ for i=1:1
 
         fprintf('Image number = %d\n',i);
         fprintf('S.D = %d\n\n', sd_set(j));
-        % fprintf('application of sifprintf('eew');mple adaptive wiener\n');
-        % fprintf('MSE = %d\n',mse);
-        % fprintf('PSNR = %d\n', psnr);
-        % fprintf('SSIM = %d\n', ssim);
-        % fprintf('\n');
 
 
         ssim = zeros(MAX_ITER,1);
@@ -90,30 +86,22 @@ for i=1:1
             d0 = d1 + r1; % Adding back the denoised residue
             [mse(k),psnr(k)] = getPSNR(y,d0,sd);
             ssim(k) = getSSIM(y,d0,sd_ratio,c1,c2,c3);
-            
-            %         fprintf('Iteration = %d\n',k);
-            %         fprintf('MSE = %d\n',mse(k));
-            %         fprintf('PSNR = %d\n', psnr(k));
-            %         fprintf('SSIM = %d\n', ssim(k));
-            %         fprintf('\n');
         end
     
     
         figure()
         hold on
         plot(ssim);
-        plot(ssim0*ones(MAX_ITER));
+        scatter(1,ssim0);
         hold off
-        legend('Iterative Method', 'TVI');
-        %title('ssim for image = %d s.d = %d',i,sd_set(j));
+        title(sprintf('ssim for image = %d, s.d = %d',i,sd_set(j)));
 
         figure()
         hold on
         plot(psnr);
-        plot(psnr0*ones(MAX_ITER));
+        scatter(1,psnr0);
         hold off
-        legend('Iterative Method', 'TVI');
-        %title('psnr for image = %d s.d = %d',i,sd_set(j));
+        title(sprintf('psnr for image = %d, s.d = %d',i,sd_set(j)));
 
     end
 end
