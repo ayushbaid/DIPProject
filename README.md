@@ -11,9 +11,9 @@ The Total Variation Minimization filter code has been used as a black box. The t
 # Test Images
 The test images are located in <code>./USC_SIPI_DATABASE</code>
 
-# Running instructions
-* <code>ms1.m</code> to run the algo over 5 test images for 6 different values of noise standard deviation and plot pne figure for each standard deviation
+# Code details
+* <code>ms1.m</code> executes the algo over 5 test images for 6 different values of noise standard deviation and plots psnr and ssim figure for each standard deviation. Denoiser 1 is Wiener filter and Denoiser 2 is TVD
 
-* <code>ms.m</code> to run the algo over all test images for 6 s.d. values and plot them separately (time consuming)
+* <code>ms2.m</code> executes the algo over the lenna image for a s.d value mentioned in the code. Plots the residues and images for 2 iterations. Denoiser 1 is TVD and Denoiser 2 is Wiener filter.
 
-* <code>ms2.m</code> to run the algo over a test images for a s.d. values and plot the resulting image. The iteration continues as long as SSIM decreases
+* <code>ms3.m</code> Similar to <code>ms2.m</code> except that Denoiser 1 is Wiener filter and Denoiser 2 is TVD.
