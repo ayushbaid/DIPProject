@@ -96,17 +96,17 @@ for j=1:6
         end
     
     
-        figure(2*j-1)
+        figure(2+2*j-1)
         hold on
         plot(ssim,color_set(i));
         scatter(1,ssim0,color_set(i));
-        title(sprintf('ssim for s.d=%d',sd_ratio));
+        title(sprintf('ssim for s.d=%d',sd_set(j)));
 
-        figure(2*j)
+        figure(2+2*j)
         hold on
         plot(psnr,color_set(i));
         scatter(1,psnr0,color_set(i));
-        title(sprintf('psnr for s.d.=%d',sd_ratio));
+        title(sprintf('psnr for s.d.=%d',sd_set(j)));
 
     end
 end
